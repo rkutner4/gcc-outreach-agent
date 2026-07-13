@@ -10,16 +10,11 @@ Automated discovery and outreach for senior contacts at holding companies in **U
 4. Auto-sends **business-casual email** (Gmail) and **personal WhatsApp** (your number)
 5. Detects replies and shows them in a web dashboard — **you reply manually** from Gmail/WhatsApp on your phone
 
-## Step 1 status (current)
+## Step status
 
-Scaffold only:
-- FastAPI dashboard shell
-- SQLAlchemy models + SQLite
-- Config via `.env`
-- CLI helpers
-- Tone templates
-
-Discovery, ZoomInfo, Gmail, and WhatsApp senders land in later steps.
+- Step 1: scaffold + dashboard
+- Step 2: company/contact discovery (seed + ZoomInfo mock/API + Sales Nav CSV)
+- Step 3: enrich + compose + Gmail/WhatsApp senders (dry-run by default) + inbound poll stub
 
 ## Setup
 
@@ -35,12 +30,22 @@ python cli.py serve
 
 Open http://127.0.0.1:8000
 
+### Useful commands
+
+```powershell
+python cli.py prospect "CIOs at sovereign wealth holding companies in UAE"
+python cli.py list-companies
+python cli.py whatsapp-login
+python cli.py poll-inbound
+```
+
 ## GitHub
 
 Remote: https://github.com/rkutner4/gcc-outreach-agent
 
 ## Safety defaults
 
-- `DRY_RUN=true` by default — nothing is sent until you turn it off
+- `DRY_RUN=true` by default — nothing is truly sent until you turn it off in the dashboard/DB
 - No LinkedIn automation (CSV import only)
 - Auto-reply permanently disabled
+- Personal WhatsApp live protocol is scaffolded; dry-run writes `wa.me` drafts until neonize is wired

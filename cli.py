@@ -70,7 +70,7 @@ def prospect(
         help="Natural-language target, e.g. 'CIOs at GCC sovereign wealth holding companies'",
     ),
 ) -> None:
-    """Run Stage 1 (companies) + Stage 2 (contacts). No approval gate."""
+    """Run Stage 1–2, enrich, compose, and send (respects dry-run / pause)."""
     from agent.pipeline import run_prospect
 
     result = run_prospect(query)
@@ -96,12 +96,44 @@ def list_companies() -> None:
         )
 
 
+@app.command("whatsapp-login")
+def whatsapp_login(
+    phone_hint: str = typer.Option("", help="Optional phone hint for your own number"),
+) -> None:
+    """Create/link a personal WhatsApp session marker (QR/backend placeholder)."""
+    from agent.whatsapp_session import login_instructions, mark_linked
+
+    print(login_instructions())
+    payload = mark_linked(phone_hint=phone_hint)
+    print("[green]Session marker written.[/green]")
+    print(payload)
+
+
+@app.command("poll-inbound")
+def poll_inbound_cmd() -> None:
+    """Detect Gmail replies for awareness only — never auto-replies."""
+    from agent.inbound_monitor import poll_inbound
+
+    init_db()
+    Session = get_session_factory()
+    with Session() as db:
+        print(poll_inbound(db))
+
+
 @app.command("serve")
-def serve(host: str = "127.0.0.1", port: int = 8000) -> None:
+def serve(
+    host: str = "127.0.0.1",
+    port: int = 8000,
+    schedule: bool = typer.Option(False, help="Enable daily 09:00 prospect job"),
+) -> None:
     """Run the web dashboard."""
     import uvicorn
 
-    uvicorn.run("dashboard.app:app", host=host, port=port, reload=True)
+    if schedule:
+        from agent.scheduler import start_scheduler
+
+        start_scheduler()
+    uvicorn.run("dashboard.app:app", host=host, port=port, reload=not schedule)
 
 
 if __name__ == "__main__":

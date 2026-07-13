@@ -30,7 +30,7 @@
     <textarea id="query" name="query" rows="3" style="width:100%;margin:0.5rem 0 1rem;padding:0.75rem;border-radius:10px;border:1px solid var(--line);font:inherit;">CIOs and Heads of Alternatives at sovereign wealth holding companies in UAE, KSA, Kuwait, Bahrain</textarea>
     <button type="submit">Run prospect (companies → contacts)</button>
   </form>
-  <p class="muted">Uses seed list + ZoomInfo (mock if no API keys) + optional Sales Navigator CSVs in imports/.</p>
+  <p class="muted">Uses seed list + ZoomInfo (mock if no API keys) + optional Sales Navigator CSVs. Then enriches and auto-drafts/sends email + WhatsApp (dry-run safe until you disable it).</p>
 </section>
 
 <section class="card">
@@ -52,7 +52,7 @@
     Last run: {{ state.last_run_status if state else "idle" }}
     {% if state and state.last_run_message %}— {{ state.last_run_message }}{% endif %}
   </p>
-  <p class="muted">Default dry-run is ON (sending not wired yet in this step).</p>
+  <p class="muted">Keep dry-run ON until Gmail OAuth + WhatsApp session are configured.</p>
 </section>
 
 <section class="card">

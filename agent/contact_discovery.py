@@ -40,12 +40,17 @@ def _upsert_contact(
     existing = None
     zoom_id = payload.get("zoominfo_id") or payload.get("id")
     if zoom_id:
-        existing = db.query(Contact).filter(Contact.zoominfo_id == str(zoom_id)).one_or_none()
+        existing = (
+            db.query(Contact)
+            .filter(Contact.zoominfo_id == str(zoom_id))
+            .order_by(Contact.id)
+            .first()
+        )
     if existing is None:
         q = db.query(Contact).filter(Contact.name == name)
         if company:
             q = q.filter(Contact.holding_company_id == company.id)
-        existing = q.one_or_none()
+        existing = q.order_by(Contact.id).first()
     if existing and existing.status == "excluded":
         return existing
     if existing is None:
