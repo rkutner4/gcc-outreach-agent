@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Env & secrets
+.env
+*.pem
+credentials.json
+token.json
+client_secret*.json
+
+# Local data
+data/whatsapp_session/
+*.db
+*.sqlite3
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Imports (optional local CSVs — keep folders, ignore files)
+imports/accounts/*
+!imports/accounts/.gitkeep
+imports/leads/*
+!imports/leads/.gitkeep
+
+# Logs
+*.log
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

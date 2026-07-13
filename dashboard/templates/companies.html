@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Companies · GCC Outreach{% endblock %}
+{% block content %}
+<h1>Holding companies</h1>
+<p class="muted">Listed for visibility — no approval gate. Exclude to skip Stage 2.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Country</th>
+      <th>Type</th>
+      <th>Source</th>
+      <th>Score</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in companies %}
+    <tr>
+      <td>{{ c.name }}</td>
+      <td>{{ c.country or "—" }}{% if c.city %}, {{ c.city }}{% endif %}</td>
+      <td>{{ c.entity_type or "—" }}</td>
+      <td>{{ c.source }}</td>
+      <td>{{ "%.2f"|format(c.confidence_score) }}</td>
+      <td>{{ c.status }}</td>
+      <td>
+        {% if c.status != "excluded" %}
+        <form method="post" action="/companies/{{ c.id }}/exclude">
+          <button type="submit" class="linkish">Exclude</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" class="muted">No companies yet — discovery comes in Step 2.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

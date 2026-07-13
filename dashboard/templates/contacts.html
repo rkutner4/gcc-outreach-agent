@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Contacts · GCC Outreach{% endblock %}
+{% block content %}
+<h1>Executives</h1>
+<p class="muted">Auto-discovered at holding companies. Outreach sends automatically when the pipeline runs (respecting dry-run / caps).</p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Title</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th>Score</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in contacts %}
+    <tr>
+      <td>{{ c.name }}</td>
+      <td>{{ c.title or "—" }}</td>
+      <td>{{ c.email or "—" }}</td>
+      <td>{{ c.phone or "—" }}</td>
+      <td>{{ "%.2f"|format(c.confidence_score) }}</td>
+      <td>{{ c.status }}</td>
+      <td>
+        {% if c.status != "excluded" %}
+        <form method="post" action="/contacts/{{ c.id }}/exclude">
+          <button type="submit" class="linkish">Exclude</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" class="muted">No contacts yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

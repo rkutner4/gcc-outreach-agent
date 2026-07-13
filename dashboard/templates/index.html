@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · GCC Outreach{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Control plane</h1>
+  <p class="muted">
+    Conversations stay in Gmail and WhatsApp on your phone.
+    This dashboard starts runs, shows lists, and surfaces reply alerts only.
+  </p>
+</section>
+
+<section class="grid stats">
+  <div class="card"><div class="label">Companies</div><div class="value">{{ companies }}</div></div>
+  <div class="card"><div class="label">Contacts</div><div class="value">{{ contacts }}</div></div>
+  <div class="card"><div class="label">Unhandled replies</div><div class="value">{{ unhandled }}</div></div>
+  <div class="card">
+    <div class="label">Mode</div>
+    <div class="value small">
+      {% if state and state.paused %}PAUSED{% else %}RUNNING{% endif %}
+      ·
+      {% if state and state.dry_run %}DRY-RUN{% else %}LIVE{% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Pipeline controls</h2>
+  <div class="row">
+    {% if state and state.paused %}
+      <form method="post" action="/controls/resume"><button type="submit">Resume</button></form>
+    {% else %}
+      <form method="post" action="/controls/pause"><button type="submit" class="secondary">Pause</button></form>
+    {% endif %}
+    <form method="post" action="/controls/dry-run">
+      <input type="hidden" name="enabled" value="{% if state and state.dry_run %}false{% else %}true{% endif %}" />
+      <button type="submit" class="secondary">
+        {% if state and state.dry_run %}Disable dry-run{% else %}Enable dry-run{% endif %}
+      </button>
+    </form>
+  </div>
+  <p class="muted">
+    Last run: {{ state.last_run_status if state else "idle" }}
+    {% if state and state.last_run_message %}— {{ state.last_run_message }}{% endif %}
+  </p>
+  <p class="muted">Prospect runs will be wired in the next build steps. Default dry-run is ON.</p>
+</section>
+
+<section class="card">
+  <h2>Target geography</h2>
+  <p>UAE (Abu Dhabi, Dubai) · KSA · Kuwait · Bahrain</p>
+  <p class="muted">Sender: {{ settings.sender_name }} · {{ settings.sender_firm }}</p>
+</section>
+{% endblock %}

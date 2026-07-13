@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Inbound · GCC Outreach{% endblock %}
+{% block content %}
+<h1>Inbound replies</h1>
+<p class="muted">Read-only alerts. Reply from Gmail or WhatsApp on your phone — the agent never auto-replies.</p>
+<table>
+  <thead>
+    <tr>
+      <th>When</th>
+      <th>Channel</th>
+      <th>Contact</th>
+      <th>Snippet</th>
+      <th>Handled</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for m in messages %}
+    <tr class="{% if not m.handled %}unread{% endif %}">
+      <td>{{ m.received_at }}</td>
+      <td>{{ m.channel }}</td>
+      <td>{% if m.contact %}{{ m.contact.name }}{% else %}—{% endif %}</td>
+      <td>{{ m.body[:140] }}{% if m.body|length > 140 %}…{% endif %}</td>
+      <td>{{ "yes" if m.handled else "no" }}</td>
+      <td>
+        {% if not m.handled %}
+        <form method="post" action="/inbound/{{ m.id }}/handled">
+          <button type="submit" class="linkish">Mark handled</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" class="muted">No inbound messages yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

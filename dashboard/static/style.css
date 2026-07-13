@@ -1,0 +1,93 @@
+:root {
+  --bg: #f4f1ec;
+  --ink: #1c1a17;
+  --muted: #6b645c;
+  --card: #fffdf9;
+  --line: #ddd6cc;
+  --accent: #0f5c4c;
+  --accent-2: #c45c26;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: radial-gradient(circle at top left, #efe8dc, var(--bg));
+  color: var(--ink);
+  min-height: 100vh;
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255,253,249,0.9);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+}
+.brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+nav a {
+  margin-left: 1rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+nav a:hover { color: var(--accent); }
+.container { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+.hero h1 { margin-bottom: 0.25rem; }
+.muted { color: var(--muted); }
+.grid.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+}
+.label { font-size: 0.85rem; color: var(--muted); }
+.value { font-size: 1.8rem; font-weight: 700; margin-top: 0.25rem; }
+.value.small { font-size: 1.1rem; }
+.row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+button.secondary { background: #3d3a36; }
+button.linkish {
+  background: transparent;
+  color: var(--accent-2);
+  padding: 0;
+  border-radius: 0;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+th, td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  font-size: 0.95rem;
+}
+th { background: #f7f2ea; color: var(--muted); font-weight: 600; }
+tr.unread { background: #fff7ef; }
+@media (max-width: 700px) {
+  .top { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  nav a { margin-left: 0; margin-right: 0.75rem; }
+}

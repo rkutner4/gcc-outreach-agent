@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}GCC Outreach Agent{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="/">GCC Outreach Agent</a>
+    <nav>
+      <a href="/">Dashboard</a>
+      <a href="/companies">Companies</a>
+      <a href="/contacts">Contacts</a>
+      <a href="/inbound">Inbound</a>
+    </nav>
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

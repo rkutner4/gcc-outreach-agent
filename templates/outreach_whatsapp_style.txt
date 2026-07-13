@@ -1,0 +1,13 @@
+Tone: personal and conversational — as if the sender typed it themselves on WhatsApp.
+
+Rules:
+- Short (ideally under ~300 characters for the body)
+- Warm, natural, not corporate
+- Use first name
+- Mention the holding company lightly
+- One soft ask / invitation to talk
+- No unsubscribe boilerplate, no legal footer
+- Do not invent personal details
+- Do not sound like a template blast
+
+Audience: same GCC institutional targets; channel is personal WhatsApp from the sender's own number.
