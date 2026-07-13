@@ -19,6 +19,7 @@ from agent.db import (
     get_db,
     init_db,
 )
+from agent.pipeline import run_prospect
 
 app = FastAPI(title="GCC Outreach Agent", version="0.1.0")
 
@@ -44,9 +45,9 @@ def home(request: Request, db: Session = Depends(get_db)):
     contacts = db.query(Contact).count()
     unhandled = db.query(InboundMessage).filter(InboundMessage.handled.is_(False)).count()
     return templates.TemplateResponse(
+        request,
         "index.html",
         {
-            "request": request,
             "settings": settings,
             "state": state,
             "companies": companies,
@@ -64,9 +65,7 @@ def companies_page(request: Request, db: Session = Depends(get_db)):
         .limit(500)
         .all()
     )
-    return templates.TemplateResponse(
-        "companies.html", {"request": request, "companies": rows}
-    )
+    return templates.TemplateResponse(request, "companies.html", {"companies": rows})
 
 
 @app.get("/contacts", response_class=HTMLResponse)
@@ -77,9 +76,7 @@ def contacts_page(request: Request, db: Session = Depends(get_db)):
         .limit(500)
         .all()
     )
-    return templates.TemplateResponse(
-        "contacts.html", {"request": request, "contacts": rows}
-    )
+    return templates.TemplateResponse(request, "contacts.html", {"contacts": rows})
 
 
 @app.get("/inbound", response_class=HTMLResponse)
@@ -90,9 +87,17 @@ def inbound_page(request: Request, db: Session = Depends(get_db)):
         .limit(200)
         .all()
     )
-    return templates.TemplateResponse(
-        "inbound.html", {"request": request, "messages": rows}
-    )
+    return templates.TemplateResponse(request, "inbound.html", {"messages": rows})
+
+
+@app.post("/prospect")
+def prospect_run(
+    query: str = Form(
+        "CIOs and Heads of Alternatives at sovereign wealth holding companies in UAE, KSA, Kuwait, Bahrain"
+    ),
+):
+    result = run_prospect(query)
+    return RedirectResponse(f"/?prospect={result.get('ok')}&c={result.get('companies')}&p={result.get('contacts')}", status_code=303)
 
 
 @app.post("/controls/pause")

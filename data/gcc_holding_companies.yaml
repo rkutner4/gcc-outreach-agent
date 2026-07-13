@@ -1,0 +1,194 @@
+# Holding companies / sovereign & institutional wealth entities
+# Geography: UAE (Abu Dhabi, Dubai), KSA, Kuwait, Bahrain only
+entities:
+  - name: Abu Dhabi Investment Authority
+    short_name: ADIA
+    country: UAE
+    city: Abu Dhabi
+    entity_type: swf
+    domain: adia.ae
+    aliases: [ADIA]
+
+  - name: Mubadala Investment Company
+    short_name: Mubadala
+    country: UAE
+    city: Abu Dhabi
+    entity_type: swf
+    domain: mubadala.com
+    aliases: [Mubadala]
+
+  - name: Abu Dhabi Developmental Holding Company
+    short_name: ADQ
+    country: UAE
+    city: Abu Dhabi
+    entity_type: holding
+    domain: adq.ae
+    aliases: [ADQ]
+
+  - name: Emirates Investment Authority
+    short_name: EIA
+    country: UAE
+    city: Abu Dhabi
+    entity_type: swf
+    domain: eia.gov.ae
+    aliases: [EIA]
+
+  - name: Investment Corporation of Dubai
+    short_name: ICD
+    country: UAE
+    city: Dubai
+    entity_type: holding
+    domain: icd.gov.ae
+    aliases: [ICD]
+
+  - name: Dubai Investment Fund
+    short_name: DIF
+    country: UAE
+    city: Dubai
+    entity_type: swf
+    domain: null
+    aliases: [Dubai Investment Fund]
+
+  - name: Public Investment Fund
+    short_name: PIF
+    country: KSA
+    city: Riyadh
+    entity_type: swf
+    domain: pif.gov.sa
+    aliases: [PIF, Saudi Public Investment Fund]
+
+  - name: Sanabil Investments
+    short_name: Sanabil
+    country: KSA
+    city: Riyadh
+    entity_type: institutional
+    domain: sanabil.com
+    aliases: [Sanabil]
+
+  - name: Saudi Arabian Investment Company
+    short_name: Sanabil affiliate / Hassana context
+    country: KSA
+    city: Riyadh
+    entity_type: institutional
+    domain: null
+    aliases: [Saudi Arabian Investment Company]
+
+  - name: Kuwait Investment Authority
+    short_name: KIA
+    country: Kuwait
+    city: Kuwait City
+    entity_type: swf
+    domain: kia.gov.kw
+    aliases: [KIA]
+
+  - name: Kuwait Investment Company
+    short_name: KIC
+    country: Kuwait
+    city: Kuwait City
+    entity_type: institutional
+    domain: kuwait-investment.com
+    aliases: [KIC]
+
+  - name: Mumtalakat Holding Company
+    short_name: Mumtalakat
+    country: Bahrain
+    city: Manama
+    entity_type: swf
+    domain: mumtalakat.bh
+    aliases: [Mumtalakat, Bahrain Mumtalakat]
+
+  - name: Bahrain Mumtalakat Holding Company
+    short_name: Mumtalakat
+    country: Bahrain
+    city: Manama
+    entity_type: holding
+    domain: mumtalakat.bh
+    aliases: [Mumtalakat Holding]
+
+  - name: Investcorp
+    short_name: Investcorp
+    country: Bahrain
+    city: Manama
+    entity_type: institutional
+    domain: investcorp.com
+    aliases: [Investcorp Holdings]
+
+  - name: Gulf Investment Corporation
+    short_name: GIC
+    country: Kuwait
+    city: Kuwait City
+    entity_type: institutional
+    domain: gic.com.kw
+    aliases: [Gulf Investment Corporation]
+
+  - name: Emirates NBD Asset Management
+    short_name: ENBD AM
+    country: UAE
+    city: Dubai
+    entity_type: institutional
+    domain: emiratesnbd.com
+    aliases: [Emirates NBD AM]
+
+  - name: Abu Dhabi Investment Council
+    short_name: ADIC
+    country: UAE
+    city: Abu Dhabi
+    entity_type: swf
+    domain: null
+    aliases: [ADIC]
+
+  - name: National Bonds Corporation
+    short_name: National Bonds
+    country: UAE
+    city: Dubai
+    entity_type: institutional
+    domain: nationalbonds.ae
+    aliases: [National Bonds]
+
+  - name: Al Rajhi Capital
+    short_name: Al Rajhi Capital
+    country: KSA
+    city: Riyadh
+    entity_type: institutional
+    domain: alrajhi-capital.com
+    aliases: [Al Rajhi Capital]
+
+  - name: Jadwa Investment
+    short_name: Jadwa
+    country: KSA
+    city: Riyadh
+    entity_type: institutional
+    domain: jadwa.com
+    aliases: [Jadwa]
+
+  - name: Saudi Fransi Capital
+    short_name: BSF Capital
+    country: KSA
+    city: Riyadh
+    entity_type: institutional
+    domain: sfransicapital.com
+    aliases: [Banque Saudi Fransi Capital]
+
+  - name: NBK Capital
+    short_name: NBK Capital
+    country: Kuwait
+    city: Kuwait City
+    entity_type: institutional
+    domain: nbkcapital.com
+    aliases: [National Bank of Kuwait Capital]
+
+  - name: GFH Financial Group
+    short_name: GFH
+    country: Bahrain
+    city: Manama
+    entity_type: institutional
+    domain: gfh.com
+    aliases: [GFH]
+
+  - name: Shuaa Capital
+    short_name: Shuaa
+    country: UAE
+    city: Dubai
+    entity_type: institutional
+    domain: shuaa.com
+    aliases: [SHUAA]

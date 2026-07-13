@@ -32,8 +32,10 @@ Thumbs.db
 # Imports (optional local CSVs — keep folders, ignore files)
 imports/accounts/*
 !imports/accounts/.gitkeep
+!imports/accounts/sample_*.csv
 imports/leads/*
 !imports/leads/.gitkeep
+!imports/leads/sample_*.csv
 
 # Logs
 *.log

@@ -63,6 +63,39 @@ def resume() -> None:
     print("[green]Pipeline resumed.[/green]")
 
 
+@app.command()
+def prospect(
+    query: str = typer.Argument(
+        ...,
+        help="Natural-language target, e.g. 'CIOs at GCC sovereign wealth holding companies'",
+    ),
+) -> None:
+    """Run Stage 1 (companies) + Stage 2 (contacts). No approval gate."""
+    from agent.pipeline import run_prospect
+
+    result = run_prospect(query)
+    print(result)
+
+
+@app.command("list-companies")
+def list_companies() -> None:
+    """Print discovered holding companies."""
+    from agent.db import HoldingCompany
+
+    init_db()
+    Session = get_session_factory()
+    with Session() as db:
+        rows = (
+            db.query(HoldingCompany)
+            .order_by(HoldingCompany.confidence_score.desc())
+            .all()
+        )
+    for r in rows:
+        print(
+            f"{r.id}\t{r.confidence_score:.2f}\t{r.status}\t{r.country}\t{r.name}"
+        )
+
+
 @app.command("serve")
 def serve(host: str = "127.0.0.1", port: int = 8000) -> None:
     """Run the web dashboard."""
