@@ -1,0 +1,20 @@
+# Normalize line endings to LF in the repository and in the working tree.
+# Without this, a checkout on another machine can show whole-file diffs that
+# are nothing but CRLF/LF churn.
+* text=auto eol=lf
+
+# Windows shells require CRLF to parse these correctly.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Never munge binaries.
+*.db binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.xlsx binary
+*.zip binary
