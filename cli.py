@@ -21,6 +21,9 @@ def init() -> None:
 @app.command()
 def status() -> None:
     """Show pipeline + config summary."""
+    from agent.gmail_sender import gmail_status
+    from agent.whatsapp_session import is_linked
+
     init_db()
     settings = get_settings()
     Session = get_session_factory()
@@ -35,6 +38,8 @@ def status() -> None:
             "email_daily_cap": settings.email_daily_cap,
             "whatsapp_daily_cap": settings.whatsapp_daily_cap,
             "geography": list(settings.target_countries),
+            "gmail": gmail_status(settings),
+            "whatsapp_linked": is_linked(settings),
         }
     )
 
@@ -93,6 +98,52 @@ def list_companies() -> None:
     for r in rows:
         print(
             f"{r.id}\t{r.confidence_score:.2f}\t{r.status}\t{r.country}\t{r.name}"
+        )
+
+
+@app.command("gmail-login")
+def gmail_login(
+    verify: bool = typer.Option(
+        True,
+        "--verify/--no-verify",
+        help="Call Gmail profile API after OAuth to confirm the linked mailbox",
+    ),
+) -> None:
+    """Run Gmail OAuth in the browser and save a refresh token locally."""
+    from agent.gmail_sender import gmail_status, login_instructions, verify_gmail_account
+
+    settings = get_settings()
+    print(login_instructions(settings))
+    status = gmail_status(settings)
+    if not status["client_secret_exists"]:
+        print(
+            "[red]Missing OAuth client JSON.[/red]\n"
+            f"Expected at: {status['client_secret_path']}"
+        )
+        raise typer.Exit(code=1)
+
+    if verify:
+        try:
+            profile = verify_gmail_account(settings)
+        except FileNotFoundError as exc:
+            print(f"[red]{exc}[/red]")
+            raise typer.Exit(code=1) from exc
+        except Exception as exc:  # noqa: BLE001
+            print(f"[red]Gmail authorization failed:[/red] {exc}")
+            raise typer.Exit(code=1) from exc
+        print("[green]Gmail authorized.[/green]")
+        print(profile)
+    else:
+        from agent.gmail_sender import authorize_gmail
+
+        authorize_gmail(settings)
+        print("[green]Gmail token saved.[/green]")
+
+    print(gmail_status(settings))
+    if not settings.sender_email:
+        print(
+            "[yellow]Tip:[/yellow] set SENDER_EMAIL in .env so outbound messages "
+            "include the correct From header."
         )
 
 

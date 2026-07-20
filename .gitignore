@@ -17,6 +17,8 @@ build/
 credentials.json
 token.json
 client_secret*.json
+credentials/*
+!credentials/.gitkeep
 
 # Local data
 data/whatsapp_session/
