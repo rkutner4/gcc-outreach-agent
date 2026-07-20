@@ -51,9 +51,6 @@ No pressure at all — happy to share a bit more context if useful. Would a brie
 Best,
 {settings.sender_name}
 {settings.sender_firm}
-
----
-To unsubscribe from future emails, reply with UNSUBSCRIBE.
 {settings.mailing_address}
 """
     return ComposedMessage("email", subject, body.strip() + "\n")
@@ -115,11 +112,7 @@ def _llm_compose(
             return None
         subject = data.get("subject") if channel == "email" else None
         if channel == "email" and settings.mailing_address not in body:
-            body = (
-                body.rstrip()
-                + "\n\n---\nTo unsubscribe from future emails, reply with UNSUBSCRIBE.\n"
-                + settings.mailing_address
-            )
+            body = body.rstrip() + "\n" + settings.mailing_address
         return ComposedMessage(channel, subject, body.strip())
     except Exception as exc:  # noqa: BLE001
         logger.warning("LLM compose failed (%s): %s", channel, exc)

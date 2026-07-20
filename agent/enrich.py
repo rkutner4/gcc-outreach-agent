@@ -52,7 +52,9 @@ def enrich_contacts(
 
     enriched: list[Contact] = []
     for contact in contacts:
-        if contact.status == "excluded":
+        # "contacted" is terminal — re-enriching one would reset it to "enriched"
+        # and put an already-messaged person back in front of the sender.
+        if contact.status in {"excluded", "contacted", "suppressed"}:
             continue
         if is_suppressed(db, contact_id=contact.id, email=contact.email, phone=contact.phone):
             contact.status = "suppressed"

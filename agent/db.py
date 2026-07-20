@@ -77,6 +77,9 @@ class Outreach(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     contact_id: Mapped[int] = mapped_column(ForeignKey("contacts.id"), nullable=False, index=True)
     channel: Mapped[str] = mapped_column(String(32), nullable=False)  # email | whatsapp
+    # Recipient address, normalized. This is the send-once key: duplicate contact
+    # rows are the expected failure mode, so the guarantee cannot key on contact_id.
+    to_email: Mapped[str | None] = mapped_column(String(512), nullable=True, index=True)
     subject: Mapped[str | None] = mapped_column(String(512), nullable=True)
     body: Mapped[str] = mapped_column(Text, nullable=False)
     gmail_thread_id: Mapped[str | None] = mapped_column(String(256), nullable=True, index=True)
@@ -168,9 +171,32 @@ def get_session_factory():
     return _SessionLocal
 
 
+def _ensure_columns(engine) -> None:
+    """Add columns introduced after a database was first created.
+
+    `create_all` only creates missing tables, so a DB predating a column keeps
+    the old shape. Kept deliberately small — swap for Alembic if this grows.
+    """
+    from sqlalchemy import inspect, text
+
+    inspector = inspect(engine)
+    if "outreach" not in inspector.get_table_names():
+        return
+    existing = {col["name"] for col in inspector.get_columns("outreach")}
+    if "to_email" in existing:
+        return
+    with engine.begin() as conn:
+        conn.execute(text("ALTER TABLE outreach ADD COLUMN to_email VARCHAR(512)"))
+        if engine.dialect.name == "sqlite":
+            conn.execute(
+                text("CREATE INDEX IF NOT EXISTS ix_outreach_to_email ON outreach (to_email)")
+            )
+
+
 def init_db() -> None:
     engine = get_engine()
     Base.metadata.create_all(bind=engine)
+    _ensure_columns(engine)
     Session = get_session_factory()
     with Session() as session:
         state = session.query(PipelineState).first()

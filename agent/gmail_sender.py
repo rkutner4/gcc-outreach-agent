@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 
 from agent.config import Settings, get_settings
 from agent.db import Outreach
+from agent.identity import normalize_email
 
 logger = logging.getLogger(__name__)
 
@@ -78,6 +79,29 @@ def emails_sent_today(db: Session) -> int:
     )
 
 
+def already_emailed(db: Session, email: str | None) -> bool:
+    """True if this address has ever received a real send.
+
+    Keyed on the address rather than the contact row: re-discovery routinely
+    produces a second row for the same person, and that row is exactly what
+    would otherwise earn them a second "initial" email. Dry runs do not count —
+    nothing left the building.
+    """
+    normalized = normalize_email(email)
+    if not normalized:
+        return False
+    return (
+        db.query(Outreach.id)
+        .filter(
+            Outreach.channel == "email",
+            Outreach.status == "sent",
+            func.lower(Outreach.to_email) == normalized,
+        )
+        .first()
+        is not None
+    )
+
+
 def send_email(
     db: Session,
     *,
@@ -92,6 +116,7 @@ def send_email(
     outreach = Outreach(
         contact_id=contact_id,
         channel="email",
+        to_email=normalize_email(to_email) or to_email,
         subject=subject,
         body=body,
         status="draft",

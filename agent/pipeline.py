@@ -11,7 +11,8 @@ from agent.config import get_settings
 from agent.contact_discovery import discover_contacts
 from agent.db import Contact, PipelineState, get_session_factory, init_db
 from agent.enrich import enrich_contacts, is_suppressed
-from agent.gmail_sender import send_email
+from agent.gmail_sender import already_emailed, send_email
+from agent.identity import normalize_email
 from agent.outreach_compose import compose_email, compose_whatsapp
 from agent.whatsapp_sender import send_whatsapp
 
@@ -37,7 +38,12 @@ def send_outreach_for_contacts(
     emailed = 0
     whatsapped = 0
     skipped = 0
+    already = 0
+    capped = 0
     errors: list[str] = []
+    # Guards against duplicate contact rows for the same person colliding within
+    # a single run, before any of them has been committed as sent.
+    seen_emails: set[str] = set()
 
     for contact in contacts:
         if contact.status in {"excluded", "suppressed"}:
@@ -53,26 +59,47 @@ def send_outreach_for_contacts(
             skipped += 1
             continue
 
+        sent_any = False
+        failed_any = False
+
         if contact.email:
-            try:
-                msg = compose_email(contact, settings)
-                send_email(
-                    db,
-                    to_email=contact.email,
-                    subject=msg.subject or "Introduction",
-                    body=msg.body,
-                    contact_id=contact.id,
-                    dry_run=dry_run,
-                    settings=settings,
-                )
-                emailed += 1
-            except Exception as exc:  # noqa: BLE001
-                errors.append(f"email:{contact.id}:{exc}")
+            normalized = normalize_email(contact.email)
+            if not normalized:
+                errors.append(f"email:{contact.id}:unparseable address {contact.email!r}")
+                failed_any = True
+            elif normalized in seen_emails or already_emailed(db, normalized):
+                # This person has had their one message. Nothing further is ever sent.
+                seen_emails.add(normalized)
+                already += 1
+            else:
+                try:
+                    msg = compose_email(contact, settings)
+                    outreach = send_email(
+                        db,
+                        to_email=normalized,
+                        subject=msg.subject or "Introduction",
+                        body=msg.body,
+                        contact_id=contact.id,
+                        dry_run=dry_run,
+                        settings=settings,
+                    )
+                    if outreach.status in {"sent", "dry_run"}:
+                        # Claimed in dry-run too, so a rehearsal previews the real run.
+                        seen_emails.add(normalized)
+                        emailed += 1
+                        sent_any = True
+                    elif outreach.status == "capped":
+                        capped += 1
+                    else:
+                        failed_any = True
+                except Exception as exc:  # noqa: BLE001
+                    errors.append(f"email:{contact.id}:{exc}")
+                    failed_any = True
 
         if contact.phone:
             try:
                 msg = compose_whatsapp(contact, settings)
-                send_whatsapp(
+                outreach = send_whatsapp(
                     db,
                     phone=contact.phone,
                     body=msg.body,
@@ -81,18 +108,31 @@ def send_outreach_for_contacts(
                     settings=settings,
                     sleep=not dry_run,
                 )
-                whatsapped += 1
+                if outreach.status in {"sent", "dry_run"}:
+                    whatsapped += 1
+                    sent_any = True
+                elif outreach.status == "capped":
+                    capped += 1
+                else:
+                    failed_any = True
             except Exception as exc:  # noqa: BLE001
                 errors.append(f"whatsapp:{contact.id}:{exc}")
+                failed_any = True
 
-        if contact.email or contact.phone:
-            contact.status = "contacted" if not dry_run else "enriched"
+        if sent_any and not dry_run:
+            contact.status = "contacted"
+        elif failed_any:
+            # Leave retryable — previously any contact with an address was marked
+            # contacted even when every send raised, so failures were never retried.
+            contact.status = "enriched"
 
     db.commit()
     return {
         "emailed": emailed,
         "whatsapped": whatsapped,
         "skipped": skipped,
+        "already_contacted": already,
+        "capped": capped,
         "errors": errors,
     }
 
@@ -119,7 +159,14 @@ def run_prospect(query: str, *, db: Session | None = None, send: bool = True) ->
         contacts = discover_contacts(db, query)
         enriched = enrich_contacts(db, contacts)
 
-        send_stats = {"emailed": 0, "whatsapped": 0, "skipped": 0, "errors": []}
+        send_stats = {
+            "emailed": 0,
+            "whatsapped": 0,
+            "skipped": 0,
+            "already_contacted": 0,
+            "capped": 0,
+            "errors": [],
+        }
         if send:
             send_stats = send_outreach_for_contacts(
                 db, enriched or contacts, dry_run=bool(state.dry_run)
@@ -130,6 +177,7 @@ def run_prospect(query: str, *, db: Session | None = None, send: bool = True) ->
         state.last_run_message = (
             f"query={query!r} companies={len(companies)} contacts={len(contacts)} "
             f"enriched={len(enriched)} emailed={send_stats['emailed']} "
+            f"already_contacted={send_stats['already_contacted']} "
             f"whatsapp={send_stats['whatsapped']} dry_run={state.dry_run}"
         )
         db.commit()

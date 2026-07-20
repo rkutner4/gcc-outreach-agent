@@ -48,4 +48,10 @@ Remote: https://github.com/rkutner4/gcc-outreach-agent
 - `DRY_RUN=true` by default — nothing is truly sent until you turn it off in the dashboard/DB
 - No LinkedIn automation (CSV import only)
 - Auto-reply permanently disabled
+- **One message per person, ever.** The agent sends a single initial email and then
+  stops; all follow-up is human. Enforced at send time by `already_emailed()`, keyed
+  on the normalized recipient address rather than the contact row — re-discovery
+  routinely creates a second row for the same person, and that row is exactly what
+  would otherwise earn them a second "initial" email. Because there is no sequence,
+  there is no unsubscribe mechanism and outbound must never offer one.
 - Personal WhatsApp live protocol is scaffolded; dry-run writes `wa.me` drafts until neonize is wired

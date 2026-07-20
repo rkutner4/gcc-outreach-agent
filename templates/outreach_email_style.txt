@@ -6,7 +6,9 @@ Rules:
 - Reference their holding company and role naturally
 - One clear, low-pressure ask (e.g. would a brief call make sense?)
 - Sign off with the sender's name
-- Include a minimal compliance footer: unsubscribe line + physical mailing address
+- Close with the sender's firm and physical mailing address
+- Never offer to unsubscribe, opt out, or "remove from a list" — this pipeline sends
+  one message per person and never follows up, so there is no list to leave
 - Do not sound like a marketing blast or stiff corporate formal letter
 - Do not invent facts about the recipient beyond provided profile fields
 
